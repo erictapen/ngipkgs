@@ -12,4 +12,5 @@
     examples = { };
     links = { };
   };
+  tests.open-web-calendar = pkgs.nixosTests.open-web-calendar;
 }
