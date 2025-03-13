@@ -113,7 +113,7 @@ rec {
         };
       map-new-projects = projects: lib.mapAttrs (name: value: new-project-to-old value) projects;
     in
-    import ./projects-old project-inputs // map-new-projects (import ./projects project-inputs);
+    map-new-projects (import ./projects project-inputs);
 
   project-models = import ./projects/models.nix { inherit lib pkgs sources; };
 
