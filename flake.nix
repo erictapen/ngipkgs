@@ -218,7 +218,15 @@
 
           devShells.default = pkgs.mkShell {
             inherit (checks."infra/pre-commit") shellHook;
-            buildInputs = checks."infra/pre-commit".enabledPackages;
+            buildInputs = checks."infra/pre-commit".enabledPackages ++ [
+              (pkgs.haskellPackages.ghcWithPackages (
+                p: with p; [
+                  hnix
+                  nixfmt
+                ]
+              ))
+
+            ];
           };
 
           formatter = pkgs.writeShellApplication {
