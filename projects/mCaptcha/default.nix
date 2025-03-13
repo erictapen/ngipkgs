@@ -4,23 +4,6 @@
   sources,
 }@args:
 {
-  nixos.module.programs.mcaptcha = {
-    name = "mcaptcha";
-    module =
-      {
-        pkgs,
-        lib,
-        sources,
-        ...
-      }@args:
-      {
-        options.programs.mcaptcha = {
-          inherit (pkgs) mcaptcha mcaptcha-cache;
-        };
-      };
-    examples = { };
-    links = { };
-  };
   nixos = {
     modules.services.mcaptcha = ./service.nix;
     tests = {

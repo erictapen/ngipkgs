@@ -57,35 +57,42 @@ programModule name packages =
         )
     )
 
-transformAttributeNames :: TContext -> Binding (Fix NExprF) -> Maybe (Binding (Fix NExprF))
-transformAttributeNames context (NamedVar path value pos) = case path of
-  ((StaticKey (VarName "packages")) :| _) ->
+transformNixos :: TContext -> Binding (Fix NExprF) -> Maybe (Binding (Fix NExprF))
+transformNixos context (NamedVar path value pos) = case path of
+  ((StaticKey (VarName "modules")) :| (StaticKey (VarName "services")) :| _) -> Just $ NamedVar path value pos
+
+transformToplevel :: TContext -> Binding (Fix NExprF) -> Maybe (Binding (Fix NExprF))
+transformToplevel context (NamedVar path value pos) = case (path, value) of
+  -- Just remove packages for now
+  (((StaticKey (VarName "packages")) :| _), _) -> Nothing
+  -- Just $
+  --   NamedVar
+  --     ( fromLis
+  --         [ attrName "nixos",
+  --           attrName "module",
+  --           attrName "programs",
+  --           attrName name
+  --         ]
+  --     )
+  --     ( Fix $
+  --         NSet
+  --           NonRecursive
+  --           [ binding "name" (nStr $ name),
+  --             binding "module" (programModule name value),
+  --             binding "examples" emptyAttrs,
+  --             binding "links" emptyAttrs
+  --           ]
+  --     )
+  --     pos
+  (((StaticKey (VarName "nixos")) :| _), Fix (NSet r bindings)) ->
     Just $
-      NamedVar
-        ( fromList
-            [ attrName "nixos",
-              attrName "module",
-              attrName "programs",
-              attrName name
-            ]
-        )
-        ( Fix $
-            NSet
-              NonRecursive
-              [ binding "name" (nStr $ name),
-                binding "module" (programModule name value),
-                binding "examples" emptyAttrs,
-                binding "links" emptyAttrs
-              ]
-        )
-        pos
-  _ -> Just $ NamedVar path value pos
+      NamedVar path (Fix (NSet r (mapMaybe (transformNixos context) bindings))) pos
   where
     name = programName $ projectName context
 
 transformDefaultNix :: TContext -> NExpr -> NExpr
 transformDefaultNix context (Fix (NAbs params (Fix (NSet r bindings)))) =
-  (Fix (NAbs params (Fix (NSet r (mapMaybe (transformAttributeNames context) bindings)))))
+  (Fix (NAbs params (Fix (NSet r (mapMaybe (transformToplevel context) bindings)))))
 
 -- Process a single default.nix file
 processFile :: TContext -> FilePath -> IO String

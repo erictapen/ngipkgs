@@ -4,21 +4,6 @@
   sources,
 }@args:
 {
-  nixos.module.programs.pretalx = {
-    name = "pretalx";
-    module =
-      {
-        pkgs,
-        lib,
-        sources,
-        ...
-      }@args:
-      {
-        options.programs.pretalx = { inherit (pkgs) pretalxFull; };
-      };
-    examples = { };
-    links = { };
-  };
   nixos = {
     modules.services.ngi-pretalx = ./service.nix;
     tests.pretalx = import ./test args;

@@ -5,23 +5,6 @@
   ...
 }@args:
 {
-  nixos.module.programs.wireguard = {
-    name = "wireguard";
-    module =
-      {
-        pkgs,
-        lib,
-        sources,
-        ...
-      }@args:
-      {
-        options.programs.wireguard = {
-          inherit (pkgs) wireguard-rs wireguard-go wireguard-tools;
-        };
-      };
-    examples = { };
-    links = { };
-  };
   nixos = {
     modules.services.wireguard = "${sources.inputs.nixpkgs}/nixos/modules/services/networking/wireguard.nix";
     tests =
