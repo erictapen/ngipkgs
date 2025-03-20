@@ -158,6 +158,56 @@
                   mkdir $out
                   cp $build/share/doc/nixos/options.json $out/
                 '';
+
+            lxc-images =
+              let
+                nixosSystem = import "${nixpkgs}/nixos/lib/eval-config.nix" {
+                  inherit lib system;
+                  modules = [
+                    "${nixpkgs}/nixos/modules/virtualisation/lxc-container.nix"
+                    "${nixpkgs}/nixos/modules/virtualisation/lxc-image-metadata.nix"
+                    ngiProjects.AtomicData.nixos.modules.services.atomic-server
+                    ngiProjects.AtomicData.nixos.examples.base.path
+                    {
+                      nixpkgs.overlays = [
+                        (final: prev: {
+                          inherit (ngipkgs) atomic-server;
+                        })
+                      ];
+                      system.stateVersion = "25.05";
+                    }
+                  ];
+                };
+                indexJson = pkgs.writeText "index.json" (
+                  builtins.toJSON {
+                    images = [
+                      {
+                        filename = "atomicdata.tar.gz";
+                        rootfs = "atomicdata.root.tar.gz";
+                        architecture = "x86_64";
+                        type = "container";
+                        aliases = [ { name = "atomicdata"; } ];
+                        properties = {
+                          os = "nixos";
+                          release = "25.05";
+                        };
+                      }
+                    ];
+                  }
+                );
+                inherit (nixosSystem.config.system.build) metadata tarball;
+              in
+              pkgs.runCommand "lxc-images" { } ''
+                mkdir -p $out
+                ln -s ${indexJson} $out/index.json
+                ln -s \
+                  ${metadata}/tarball/*.tar.xz \
+                  $out/atomicdata.tar.gz
+                ln -s \
+                  ${tarball}/tarball/*.tar.xz \
+                  $out/atomicdata.root.tar.gz
+              '';
+
           };
 
           # buildbot executes `nix flake check`, therefore this output

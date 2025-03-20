@@ -250,45 +250,4 @@ rec {
   shell = pkgs.mkShellNoCC {
     packages = [ ];
   };
-
-  atomicdata-demo-tarball =
-    let
-      nixosSystem = import "${sources.nixpkgs}/nixos/lib/eval-config.nix" {
-        inherit lib system;
-        modules = [
-          "${sources.nixpkgs}/nixos/modules/virtualisation/lxc-container.nix"
-          projects.AtomicData.nixos.modules.services.atomic-server
-          projects.AtomicData.nixos.examples.base.path
-          {
-            nixpkgs.overlays = [
-              (final: prev: {
-                inherit (ngipkgs) atomic-server;
-              })
-            ];
-            system.stateVersion = "25.05";
-          }
-        ];
-      };
-    in
-    nixosSystem.config.system.build.tarball;
-  atomicdata-demo-metadata =
-    let
-      nixosSystem = import "${sources.nixpkgs}/nixos/lib/eval-config.nix" {
-        inherit lib system;
-        modules = [
-          "${sources.nixpkgs}/nixos/modules/virtualisation/lxc-image-metadata.nix"
-          projects.AtomicData.nixos.modules.services.atomic-server
-          projects.AtomicData.nixos.examples.base.path
-          {
-            nixpkgs.overlays = [
-              (final: prev: {
-                inherit (ngipkgs) atomic-server;
-              })
-            ];
-            system.stateVersion = "25.05";
-          }
-        ];
-      };
-    in
-    nixosSystem.config.system.build.metadata;
 }
