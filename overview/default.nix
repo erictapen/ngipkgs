@@ -31,6 +31,7 @@ let
     mapAttrsToList
     optionalString
     recursiveUpdate
+    filterAttrs
     mapAttrs'
     nameValuePair
     take
@@ -85,7 +86,7 @@ let
         );
       in
       filter (option: any ((flip hasPrefix) (join "." option.loc)) spec) (attrValues options);
-    examples = project: attrValues project.nixos.examples;
+    examples = project: attrValues (filterAttrs (name: _: name != "demo") project.nixos.examples);
     packages = project: attrValues project.packages;
   };
 
