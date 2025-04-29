@@ -242,6 +242,7 @@ let
         + optionalString (project.nixos.modules ? services && project.nixos.modules.services != { }) (
           one "service"
         )
+        + optionalString (project.nixos.examples ? demo) (one "demo")
         +
           # TODO is supposed to represent GUI apps and needs to be distinguished from CLI applications
           optionalString false (one "application");
