@@ -16,17 +16,8 @@ in
       type = types.submodule ./shell-instructions.nix;
       default.instructions = [
         {
-          platform = "Arch Linux";
-          shell-session.bash = [
-            {
-              input = ''
-                pacman --sync --refresh --noconfirm curl git jq nix
-              '';
-            }
-          ];
-        }
-        {
           platform = "Debian";
+          id = "debian";
           shell-session.bash = [
             {
               input = ''
@@ -37,10 +28,22 @@ in
         }
         {
           platform = "Ubuntu";
+          id = "ubuntu";
           shell-session.bash = [
             {
               input = ''
                 apt install --yes curl git jq nix
+              '';
+            }
+          ];
+        }
+        {
+          platform = "Arch Linux";
+          id = "arch-linux";
+          shell-session.bash = [
+            {
+              input = ''
+                pacman --sync --refresh --noconfirm curl git jq nix
               '';
             }
           ];
@@ -78,6 +81,7 @@ in
       default.instructions = [
         {
           platform = "Arch Linux, Debian Sid/Trixie and Ubuntu 25.04";
+          id = "arch-linux-debian-sid-trixie-ubuntu-25.04";
           shell-session.bash = [
             {
               input = ''
@@ -87,7 +91,8 @@ in
           ];
         }
         {
-          platform = "Ubuntu 24.04";
+          platform = "Ubuntu 24.04/24.10";
+          id = "ubuntu-24.04-24.10";
           shell-session.bash = [
             {
               input = ''

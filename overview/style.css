@@ -483,6 +483,14 @@ nav.breadcrumb li:not(:last-child):after {
   margin: 0 0.5em;
 }
 
+.distro-picker {
+  display: none;
+}
+
+.distro-instructions {
+  display: none;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background: #3c3434;
